@@ -29,7 +29,7 @@ SERVICE = 'KB_SERVICE_NAME'
 AUTH = 'auth-service-url'
 
 # Note that the error fields do not match the 2.0 JSONRPC spec
-
+# Testing without Codecov token.
 
 def get_config_file():
     return environ.get(DEPLOY, None)
