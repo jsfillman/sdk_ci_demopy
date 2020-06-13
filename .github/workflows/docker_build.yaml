@@ -18,11 +18,11 @@ jobs:
       if: "!contains(github.event.head_commit.message, 'skip ci')"
       uses: actions/checkout@v2
 
-    - name: Retrieve Version and Repo Name
+    - name: Set Version and Repo Name
       run: |
         echo ::set-env name=MY_REPO_NAME::$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")
         echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
-        echo ::set-env name=MY_DEV_APP::$(echo $GITHUB_REPOSITORY/dev)
+        echo ::set-env name=MY_DEV_APP::$(echo ${GITHUB_REPOSITORY}/${GITHUB_REPOSITORY}"-dev")
         # export REPO_NAME=`echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//"`
         # export APP_VERSION_NUM=`sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g'`
         # export MY_DEV_APP=$GITHUB_REPOSITORY/$REPO_NAME-dev
