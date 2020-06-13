@@ -24,15 +24,20 @@ jobs:
         export APP_VERSION_NUM=`sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g'`
         export MY_DEV_APP=$GITHUB_REPOSITORY/$REPO_NAME-dev
 
+    - name: Retrieve Version and Repo Name
+      run: |
+        echo $REPO_NAME
+        echo $APP_VERSION_NUM
+        echo $MY_DEV_APP
         
-    - name: Build and Push to Packages
-      if: "!contains(github.event.head_commit.message, 'skip ci')"    
-      uses: docker/build-push-action@v1
-      with:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: docker.pkg.github.com
-        repository: ${{ env.MY_DEV_APP }}
-        tags: ${{ env.APP_VERSION_NUM }}
-        tag_with_ref: true
-        tag_with_sha: true
+    # - name: Build and Push to Packages
+    #   if: "!contains(github.event.head_commit.message, 'skip ci')"    
+    #   uses: docker/build-push-action@v1
+    #   with:
+    #     username: ${{ github.actor }}
+    #     password: ${{ secrets.GITHUB_TOKEN }}
+    #     registry: docker.pkg.github.com
+    #     repository: ${{ env.MY_DEV_APP }}
+    #     tags: ${{ env.APP_VERSION_NUM }}
+    #     tag_with_ref: true
+    #     tag_with_sha: true
