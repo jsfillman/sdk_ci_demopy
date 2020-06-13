@@ -20,11 +20,16 @@ jobs:
 
     - name: Retrieve Version and Repo Name
       run: |
-        export REPO_NAME=`echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//"`
-        export APP_VERSION_NUM=`sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g'`
-        export MY_DEV_APP=$GITHUB_REPOSITORY/$REPO_NAME-dev
+        echo ::set-env name=REPO_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
+        echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
+        echo ::set-env name=MY_DEV_APP::$($GITHUB_REPOSITORY/$REPO_NAME-dev)
+        # export REPO_NAME=`echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//"`
+        # export APP_VERSION_NUM=`sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g'`
+        # export MY_DEV_APP=$GITHUB_REPOSITORY/$REPO_NAME-dev
 
     - name: Retrieve Version and Repo Name
+      env:
+        REPO_NAME: $
       run: |
         echo $REPO_NAME
         echo $APP_VERSION_NUM
