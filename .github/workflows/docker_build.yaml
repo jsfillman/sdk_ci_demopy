@@ -26,15 +26,15 @@ jobs:
         echo $APP_VERSION_NUM
         echo $GITHUB_REPOSITORY
         
-    # - name: Build and Push to Packages
-    #   if: "!contains(github.event.head_commit.message, 'skip ci')"    
-    #   env:
-    #           uses: docker/build-push-action@v1
-    #   with:
-    #     username: ${{ github.actor }}
-    #     password: ${{ secrets.GITHUB_TOKEN }}
-    #     registry: docker.pkg.github.com
-    #     repository: jsfillman/$REPO_NAME/$REPO_NAME-dev
-    #     tags: ${{ env.APP_VERSION_NUM }}
-    #     tag_with_ref: true
-    #     tag_with_sha: true
+    - name: Build and Push to Packages
+      if: "!contains(github.event.head_commit.message, 'skip ci')"    
+      env:
+              uses: docker/build-push-action@v1
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: jsfillman/$REPO_NAME/$REPO_NAME-dev
+        tags: ${{ env.APP_VERSION_NUM }}
+        tag_with_ref: true
+        tag_with_sha: true
