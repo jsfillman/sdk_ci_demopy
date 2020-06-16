@@ -26,7 +26,7 @@ jobs:
     - name: Set Appdev Target
       if: contains( github.event.pull_request.labels.*.name, 'appdev')
       run: |
-        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-dev")
+        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-appdev")
         echo "Set Appdev"
 
 ## Confirm variables

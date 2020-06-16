@@ -19,7 +19,7 @@ jobs:
     - name: Set Version and Repo Name
       run: |
         echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
-        echo ::set-env name=MY_TEST_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
+        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
 
     - name: Verify Version and Repo Name
       run: |
@@ -34,7 +34,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
-        repository: ${{ env.MY_TEST_APP }}
+        repository: ${{ env.MY_APP }}
         tag_with_ref: true
         tag_with_sha: true
         tags: ${{ env.APP_VERSION_NUM }}, latest
