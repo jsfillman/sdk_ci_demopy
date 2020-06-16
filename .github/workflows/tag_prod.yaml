@@ -50,3 +50,5 @@ jobs:
         docker tag docker.pkg.github.com/jsfillman/sdk_ci_demopy/sdk_ci_demopy-testing:sha-$MY_SHA docker.pkg.github.com/jsfillman/sdk_ci_demopy/sdk_ci_demopy:sha-$MY_SHA
         docker tag docker.pkg.github.com/jsfillman/sdk_ci_demopy/sdk_ci_demopy:sha-$MY_SHA latest
         docker push docker.pkg.github.com/jsfillman/sdk_ci_demopy/sdk_ci_demopy:sha-$MY_SHA
+
+# Fix latest export ISDEV=$(curl -s https://github.com/jsfillman/sdk_ci_demopy/packages/271278/versions | grep -c 8d1b591)

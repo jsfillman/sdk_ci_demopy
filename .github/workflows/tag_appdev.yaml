@@ -39,6 +39,7 @@ jobs:
         echo "SHA:" $MY_SHA
 
 ## Tag and push to GPR
+# Fix breaking URL
         
     - name: Tag Environment
       if: contains( github.event.pull_request.labels.*.name, 'appdev') 
@@ -46,5 +47,9 @@ jobs:
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
         docker pull docker.pkg.github.com/$GITHUB_REPOSITORY-testing:sha-$MY_SHA
         docker tag docker.pkg.github.com/$GITHUB_REPOSITORY-testing:sha-$MY_SHA docker.pkg.github.com/$MY_APP:sha-$MY_SHA
-        docker tag docker.pkg.github.com/$GITHUB_REPOSITORY-appdev:sha-$MY_SHA latest
+        docker tag docker.pkg.github.com/$GITHUB_REPOSITORY-appdev:sha-$MY_SHA docker.pkg.github.com/$MY_APP-appdev:latest
         docker push docker.pkg.github.com/$GITHUB_REPOSITORY-appdev:sha-$MY_SHA
+        docker push docker.pkg.github.com/$GITHUB_REPOSITORY-appdev:latest
+
+# docker tag docker.pkg.github.com/jsfillman/sdk_ci_demopy/sdk_ci_demopy-testing:sha-$MY_SHA docker.pkg.github.com/jsfillman/sdk_ci_demopy/sdk_ci_demopy-next:sha-$MY_SHA
+# # Fix latest export ISDEV=$(curl -s https://github.com/jsfillman/sdk_ci_demopy/packages/271278/versions | grep -c 8d1b591)
