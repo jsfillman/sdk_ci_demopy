@@ -53,17 +53,24 @@ jobs:
         echo "Version:" $APP_VERSION_NUM
         echo "App:" $MY_APP
         echo "Repo:" $GITHUB_REPOSITORY
+        echo git branch -a
+        echo git rev-parse --short=7 HEAD
 
 ## Tag and push to GPR
         
     - name: Tag Environment
       if: contains( github.event.pull_request.labels.*.name, 'appdev') 
-      uses: docker/build-push-action@v1
-      with:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: docker.pkg.github.com
-        repository: ${{ env.MY_APP }}
-        tags: ${{ env.APP_VERSION_NUM }}
-        tag_with_sha: true
-        tag_with_ref: true
+      run: |
+        docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ${{ secrets.GITHUB_TOKEN }}
+
+
+
+      # uses: docker/build-push-action@v1
+      # with:
+      #   username: ${{ github.actor }}
+      #   password: ${{ secrets.GITHUB_TOKEN }}
+      #   registry: docker.pkg.github.com
+      #   repository: ${{ env.MY_APP }}
+      #   tags: ${{ env.APP_VERSION_NUM }}
+      #   tag_with_sha: true
+      #   tag_with_ref: true
