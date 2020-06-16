@@ -1,4 +1,4 @@
-name: Tag Environments
+name: Tag Appdev Environment
 
 on:
   pull_request:
@@ -28,23 +28,23 @@ jobs:
         echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-dev")
         echo "Set Appdev"
 
-    - name: Set Next Target
-      if: contains( github.event.pull_request.labels.*.name, 'next')
-      run: |
-        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-next")
-        echo "Set Next"
+    # - name: Set Next Target
+    #   if: contains( github.event.pull_request.labels.*.name, 'next')
+    #   run: |
+    #     echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-next")
+    #     echo "Set Next"
 
-    - name: Set CI Target
-      if: contains( github.event.pull_request.labels.*.name, 'ci')
-      run: |
-        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-ci")
-        echo "Set CI"
+    # - name: Set CI Target
+    #   if: contains( github.event.pull_request.labels.*.name, 'ci')
+    #   run: |
+    #     echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-ci")
+    #     echo "Set CI"
 
-    - name: Set Production Target
-      if: contains( github.event.pull_request.labels.*.name, 'prod')
-      run: |
-        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-prod")
-        echo "Set Prod"
+    # - name: Set Production Target
+    #   if: contains( github.event.pull_request.labels.*.name, 'prod')
+    #   run: |
+    #     echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-prod")
+    #     echo "Set Prod"
 
 ## Confirm variables
 
@@ -57,7 +57,7 @@ jobs:
 ## Tag and push to GPR
         
     - name: Tag Environment
-      if: contains( github.event.pull_request.labels.*.name, 'appdev') || contains( github.event.pull_request.labels.*.name, 'next') || contains( github.event.pull_request.labels.*.name, 'ci') || contains( github.event.pull_request.labels.*.name, 'prod')  
+      if: contains( github.event.pull_request.labels.*.name, 'appdev') 
       uses: docker/build-push-action@v1
       with:
         username: ${{ github.actor }}
