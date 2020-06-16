@@ -1,4 +1,4 @@
-name: Tag Environments
+name: Tag Appdev
 
 # on:
 #   push:
@@ -36,14 +36,14 @@ jobs:
         echo $MY_DEV_APP
         echo $GITHUB_REPOSITORY
         
-    # - name: Tag Appdev
-    #   if: "contains(github.event.pull_request.comment, '[enable appdev]')"   
-    #   uses: docker/build-push-action@v1
-    #   with:
-    #     username: ${{ github.actor }}
-    #     password: ${{ secrets.GITHUB_TOKEN }}
-    #     registry: docker.pkg.github.com
-    #     repository: ${{ env.MY_DEV_APP }}
-    #     tags: ${{ env.APP_VERSION_NUM }}
-    #     tag_with_ref: true
-    #     tag_with_sha: true
+    - name: Tag Appdev
+      if: contains( github.event.pull_request.labels.*.name, 'appdev')  
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: ${{ env.MY_DEV_APP }}
+        tags: ${{ env.APP_VERSION_NUM }}
+        tag_with_ref: true
+        tag_with_sha: true
