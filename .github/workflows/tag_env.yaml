@@ -1,0 +1,70 @@
+name: Tag Appdev
+
+on:
+  pull_request:
+    types: [ labeled ]
+
+jobs:
+
+  docker_retag:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Check out GitHub Repo
+      uses: actions/checkout@v2
+
+
+    - name: Set App Version and Repo Name
+      run: |
+        echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
+        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
+
+
+## Set target Docker image based on new pull request label
+
+    - name: Set Appdev Target
+      if: contains( github.event.pull_request.labels.*.name, 'appdev')
+      run: |
+        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-dev")
+        echo "Set Appdev"
+
+    - name: Set Next Target
+      if: contains( github.event.pull_request.labels.*.name, 'next')
+      run: |
+        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-next")
+        echo "Set Next"
+
+    - name: Set CI Target
+      if: contains( github.event.pull_request.labels.*.name, 'ci')
+      run: |
+        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-ci")
+        echo "Set CI"
+
+    - name: Set Production Target
+      if: contains( github.event.pull_request.labels.*.name, 'prod')
+      run: |
+        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-prod")
+        echo "Set Appdev"
+
+## Confirm variables
+
+    - name: Verify Version and Repo Name
+      if: contains( github.event.pull_request.labels.*.name, 'appdev')
+      run: |
+        echo "Version: " $APP_VERSION_NUM
+        echo "App: " $MY_APP
+        echo "Repo: $GITHUB_REPOSITORY
+
+## Tag and push to GPR
+        
+    - name: Tag Environment
+      if: contains( github.event.pull_request.labels.*.name, 'appdev')  
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: ${{ env.MY_APP }}
+        tags: ${{ env.APP_VERSION_NUM }}
+        tag_with_ref: true
+        tag_with_sha: true
