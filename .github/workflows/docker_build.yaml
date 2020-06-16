@@ -22,8 +22,6 @@ jobs:
         echo ::set-env name=MY_TEST_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
 
     - name: Verify Version and Repo Name
-      env:
-        REPO_NAME: $
       run: |
         echo "Version:" $APP_VERSION_NUM
         echo "App:" $MY_APP
