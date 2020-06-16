@@ -61,7 +61,7 @@ jobs:
     - name: Tag Environment
       if: contains( github.event.pull_request.labels.*.name, 'appdev') 
       run: |
-        docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ${{ secrets.GITHUB_TOKEN }}
+        docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
 
 
 
