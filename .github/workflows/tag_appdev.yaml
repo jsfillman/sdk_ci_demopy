@@ -17,7 +17,7 @@ jobs:
     - name: Set App Version and Repo Name
       run: |
         echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
-        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
+        echo ::set-env name=TEST_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
         echo ::set-env name=MY_SHA::$(git rev-parse --short=7 HEAD)
 
 
@@ -53,9 +53,9 @@ jobs:
       if: contains( github.event.pull_request.labels.*.name, 'appdev')
       run: |
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
-        docker pull docker.pkg.github.com/$GITHUB_REPOSITORY:sha-$MY_SHA
-        docker tag docker.pkg.github.com/$GITHUB_REPOSITORY-testing:sha-$MY_SHA docker.pkg.github.com/$MY_APP:sha-$MY_SHA
-        docker tag docker.pkg.github.com/$GITHUB_REPOSITORY-appdev:sha-$MY_SHA docker.pkg.github.com/$MY_APP-appdev:latest
+        docker pull docker.pkg.github.com/$TEST_APP:sha-$MY_SHA
+        docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_APP:sha-$MY_SHA
+        docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_APP-appdev:latest
         docker push docker.pkg.github.com/$GITHUB_REPOSITORY-appdev:sha-$MY_SHA
         docker push docker.pkg.github.com/$GITHUB_REPOSITORY-appdev:latest
 
