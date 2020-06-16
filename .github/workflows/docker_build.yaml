@@ -1,8 +1,6 @@
 name: Docker Build
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: 
       - develop
@@ -21,17 +19,14 @@ jobs:
     - name: Set Version and Repo Name
       run: |
         echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
-        echo ::set-env name=MY_PROD_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-prod")
-        # export REPO_NAME=`echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//"`
-        # export APP_VERSION_NUM=`sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g'`
-        # export MY_DEV_APP=$GITHUB_REPOSITORY/$REPO_NAME-dev
+        echo ::set-env name=MY_TEST_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
 
     - name: Verify Version and Repo Name
       env:
         REPO_NAME: $
       run: |
         echo $APP_VERSION_NUM
-        echo $MY_DEV_APP
+        echo $MY_TEST_APP
         echo $GITHUB_REPOSITORY
         
     - name: Build and Push to Packages
@@ -41,7 +36,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
-        repository: ${{ env.MY_PROD_APP }}
+        repository: ${{ env.MY_TEST_APP }}
         tags: ${{ env.APP_VERSION_NUM }}
         tag_with_ref: true
         tag_with_sha: true
