@@ -51,9 +51,9 @@ jobs:
     - name: Verify Version and Repo Name
       if: contains( github.event.pull_request.labels.*.name, 'appdev')
       run: |
-        echo "Version: " $APP_VERSION_NUM
-        echo "App: " $MY_APP
-        echo "Repo: $GITHUB_REPOSITORY
+        echo "Version:" $APP_VERSION_NUM
+        echo "App:" $MY_APP
+        echo "Repo:" $GITHUB_REPOSITORY
 
 ## Tag and push to GPR
         
