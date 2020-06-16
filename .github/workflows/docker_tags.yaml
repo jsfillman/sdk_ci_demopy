@@ -30,6 +30,7 @@ jobs:
         # export MY_DEV_APP=$GITHUB_REPOSITORY/$REPO_NAME-dev
 
     - name: Verify Version and Repo Name
+      if: contains( github.event.pull_request.labels.*.name, 'appdev')
       run: |
         echo $APP_VERSION_NUM
         echo $MY_DEV_APP
