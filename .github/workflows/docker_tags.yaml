@@ -9,8 +9,8 @@ name: Tag Environments
 #       - master
 
 on:
-  pull_request_review_comment:
-    types: [ created, edited ]
+  pull_request:
+    types: [ labeled ]
 
 jobs:
 
