@@ -27,7 +27,7 @@ jobs:
 
 ## Determine if the current image is already tagged for the various environments
 ## (Mis)uses the :github: v4 GraphQL API
-## TODO: Replace `registryPackages` with newer equivalent
+## TODO: Replace `registryPackages` with `$VERSIONS` or newer equivalent
     - name: Check for existing images
       run: |
         echo ::set-env name=ISDEV::$(curl -sL -X POST https://api.github.com/graphql -H "Authorization: bearer ${{ secrets.GITHUB_TOKEN }} " -d '{"query":"query{repository(owner:\"jsfillman\",name:\"sdk_ci_demopy\"){registryPackages(first:100,registryPackageType:\"DOCKER\",name: \"sdk_ci_demopy-appdev\"){nodes{versions(first:100){nodes{version}}}}}}"}' | jq . | grep -c $MY_SHA)
@@ -50,6 +50,7 @@ jobs:
         echo "Next Endpoint:" $MY_NEXT_APP
         echo "CI Endpoint:" $MY_CI_APP
         echo "Prod Endpoint:" $MY_PROD_APP
+        echo "Versions:" $VERSIONS
 
 
 ## Set target Docker image based on new pull request label
@@ -93,4 +94,5 @@ jobs:
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
         docker pull docker.pkg.github.com/$TEST_APP:sha-$MY_SHA
         docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_PROD_APP:latest
+        docker push docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA
         docker push docker.pkg.github.com/$MY_PROD_APP:latest
