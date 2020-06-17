@@ -6,7 +6,7 @@ on:
 
 jobs:
 
-  tag_appdev:
+  tag_env:
     runs-on: ubuntu-latest
     steps:
 
@@ -48,14 +48,15 @@ jobs:
     - name: Tag Appdev
       if: contains( github.event.pull_request.labels.*.name, 'appdev') && env.ISDEV < 1
       run: |
-        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-appdev")
+        echo ::set-env name=MY_DEV_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-appdev")
         echo "Set Appdev"
+        echo "App:" $MY_DEV_APP
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
         docker pull docker.pkg.github.com/$TEST_APP:sha-$MY_SHA
-        docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_APP:sha-$MY_SHA
-        docker tag docker.pkg.github.com/$MY_APP:sha-$MY_SHA docker.pkg.github.com/$MY_APP:latest
-        docker push docker.pkg.github.com/$MY_APP:sha-$MY_SHA
-        docker push docker.pkg.github.com/$MY_APP:latest
+        docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_DEV_APP:sha-$MY_SHA
+        docker tag docker.pkg.github.com/$MY_DEV_APP:sha-$MY_SHA docker.pkg.github.com/$MY_DEV_APP:latest
+        docker push docker.pkg.github.com/$MY__DEV_APP:sha-$MY_SHA
+        docker push docker.pkg.github.com/$MY_DEV_APP:latest
 
 
     - name: Tag Next
