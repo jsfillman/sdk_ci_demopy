@@ -35,7 +35,6 @@ jobs:
         echo "App:" $MY_APP
         echo "Repo:" $GITHUB_REPOSITORY
         echo "SHA:" $MY_SHA
-        echo "GH SHA:" ${{ GITHUB_SHA }}
         echo "Image count dev:" $ISDEV
         echo "Image count next:" $ISNEXT
         echo "Image count CI:" $ISCI
