@@ -44,7 +44,7 @@ jobs:
         echo "App:" $MY_APP
         echo "Repo:" $GITHUB_REPOSITORY
         echo "SHA:" $MY_SHA
-        echo "GH SHA:" 
+        echo "GH SHA:" ${{ GITHUB_SHA }}
         echo "Image count:" $ISDEV
         echo "docker.pkg.github.com/"$MY_APP:sha-$MY_SHA
 
@@ -57,7 +57,7 @@ jobs:
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
         docker pull docker.pkg.github.com/$TEST_APP:sha-$MY_SHA
         docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_APP:sha-$MY_SHA
-        docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_APP:latest
+        docker tag docker.pkg.github.com/$MY_APP:sha-$MY_SHA docker.pkg.github.com/$MY_APP:latest
         docker push docker.pkg.github.com/$MY_APP:sha-$MY_SHA
         docker push docker.pkg.github.com/$MY_APP:latest
 
