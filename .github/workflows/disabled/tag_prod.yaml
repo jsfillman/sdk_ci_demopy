@@ -1,56 +1,60 @@
-name: Tag Prod Environment
+name: Tag Production on PR Merge
 
 on:
   pull_request:
-    types: [ labeled ]
+    branches:
+    - master
+
 
 jobs:
 
-  docker_retag:
+  tag_prod:
     runs-on: ubuntu-latest
     steps:
 
     - name: Check out GitHub Repo
+      if: github.event.action == 'closed' && github.event.pull_request.merged == true
       uses: actions/checkout@v2
 
 
-    - name: Set App Version and Repo Name
+    - name: Set App Version and Name Vars
+      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
       run: |
-        echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
-        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
-        echo ::set-env name=MY_BRANCH::$(git branch --show-current)
         echo ::set-env name=MY_SHA::$(git rev-parse --short=7 HEAD)
-        echo ::set-env name=VERSIONS::$(curl -sL -X POST https://api.github.com/graphql -H "Authorization: bearer ${{ secrets.GITHUB_TOKEN }} " -d '{"query":"query{repository(owner:\"jsfillman\",name:\"sdk_ci_demopy\"){registryPackages(first:10,registryPackageType:\"DOCKER\",name: \"sdk_ci_demopy-testing\"){nodes{versions(first:100){nodes{version}}}}}}"}' | jq .)
+        echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
+        echo ::set-env name=TEST_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
+        echo ::set-env name=MY_PROD_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//"))
+
+
+## Determine if the current image is already tagged for the various environments
+## (Mis)uses the :github: v4 GraphQL API
+## TODO: Replace `registryPackages` with `$VERSIONS` or newer equivalent
+    - name: Check for existing images
+      if: github.event.action == 'closed' && github.event.pull_request.merged == true
+      run: |
+        echo ::set-env name=ISPROD::$(curl -sL -X POST https://api.github.com/graphql -H "Authorization: bearer ${{ secrets.GITHUB_TOKEN }} " -d '{"query":"query{repository(owner:\"jsfillman\",name:\"sdk_ci_demopy\"){registryPackages(first:100,registryPackageType:\"DOCKER\",name: \"sdk_ci_demopy\"){nodes{versions(first:100){nodes{version}}}}}}"}' | jq . | grep -c $MY_SHA)
+
+
+## Confirm variables
+    - name: Verify Version and Repo Name
+      if: github.event.action == 'closed' && github.event.pull_request.merged == true
+      run: |
+        echo "Version:" $APP_VERSION_NUM
+        echo "Repo:" $GITHUB_REPOSITORY
+        echo "SHA:" $MY_SHA
+        echo "Image count prod:" $ISPROD
+        echo "Prod Endpoint:" $MY_PROD_APP
+        echo "Versions:" $VERSIONS
 
 
 ## Set target Docker image based on new pull request label
 
-    - name: Set Prod Target
-      if: contains( github.event.pull_request.labels.*.name, 'prod')
-      run: |
-        echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//"))
-        echo "Set Prod"
-
-## Confirm variables
-
-    - name: Verify Version and Repo Name
-      run: |
-        echo "Version:" $APP_VERSION_NUM
-        echo "App:" $MY_APP
-        echo "Repo:" $GITHUB_REPOSITORY
-        echo "Branch:" $MY_BRANCH
-        echo "SHA:" $MY_SHA
-        echo "Versions:" $VERSIONS
-
-## Tag and push to GPR
-        
-    - name: Tag Environment
-      if: contains( github.event.pull_request.labels.*.name, 'prod') 
+    - name: Tag Prod
+      if: github.event.action == 'closed' && github.event.pull_request.merged == true
       run: |
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
-        docker pull docker.pkg.github.com/jsfillman/sdk_ci_demopy/sdk_ci_demopy-testing:sha-$MY_SHA
-        docker tag docker.pkg.github.com/jsfillman/sdk_ci_demopy/sdk_ci_demopy-testing:sha-$MY_SHA docker.pkg.github.com/jsfillman/sdk_ci_demopy/sdk_ci_demopy:sha-$MY_SHA
-        docker tag docker.pkg.github.com/jsfillman/sdk_ci_demopy/sdk_ci_demopy:sha-$MY_SHA latest
-        docker push docker.pkg.github.com/jsfillman/sdk_ci_demopy/sdk_ci_demopy:sha-$MY_SHA
-
-# Fix latest export ISDEV=$(curl -s https://github.com/jsfillman/sdk_ci_demopy/packages/271278/versions | grep -c 8d1b591)
+        docker pull docker.pkg.github.com/$TEST_APP:sha-$MY_SHA
+        docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_PROD_APP:latest
+        docker tag docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA
+        docker push docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA
+        docker push docker.pkg.github.com/$MY_PROD_APP:latest
