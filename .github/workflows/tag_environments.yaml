@@ -88,7 +88,7 @@ jobs:
         docker push docker.pkg.github.com/$MY_CI_APP:latest
 
 
-<<<<<<< HEAD
+
     # - name: Tag Prod
     #   if: contains( github.event.pull_request.labels.*.name, 'prod') && env.ISPROD < 1
     #   run: |
@@ -98,14 +98,4 @@ jobs:
     #     docker tag docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA
     #     docker push docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA
     #     docker push docker.pkg.github.com/$MY_PROD_APP:latest
-=======
-    - name: Tag Prod
-      if: contains( github.event.pull_request.labels.*.name, 'prod') && env.ISPROD < 1
-      run: |
-        docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
-        docker pull docker.pkg.github.com/$TEST_APP:sha-$MY_SHA
-        docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA
-        docker tag docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA docker.pkg.github.com/$MY_PROD_APP:latest
-        docker push docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA
-        docker push docker.pkg.github.com/$MY_PROD_APP:latest
->>>>>>> 60b5afa8560d93b2277d832515f3d1a527ecbda2
+
