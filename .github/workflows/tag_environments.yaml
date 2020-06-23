@@ -53,6 +53,9 @@ jobs:
         echo "CI Endpoint:" $MY_CI_APP
         echo "Prod Endpoint:" $MY_PROD_APP
         echo "Versions:" $VERSIONS
+        echo "SHA:" $GITHUB_SHA
+        echo "REF:" $GITHUB_REF
+        echo "HeadRef:" $GITHUB_HEAD_REF
 
 
 ## Set target Docker image based on new pull request label
