@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
     - master
+    types:
+    - closed
 
 
 jobs:
@@ -47,6 +49,7 @@ jobs:
         echo "Image count prod:" $ISPROD
         echo "Prod Endpoint:" $MY_PROD_APP
         echo "Versions:" $VERSIONS
+        echo "HeadRef:" $GITHUB_HEAD_REF
 
 
 ## Set target Docker image based on new pull request label
