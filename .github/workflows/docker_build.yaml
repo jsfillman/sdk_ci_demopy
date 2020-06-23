@@ -20,7 +20,7 @@ jobs:
       run: |
         echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
         echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
-        echo ::set-env name=VERSIONS::$(curl -sL -X POST https://api.github.com/graphql -H "Authorization: bearer ${{ secrets.GITHUB_TOKEN }} " -d '{"query":"query{repository(owner:\"jsfillman\",name:\"sdk_ci_demopy\"){registryPackages(first:10,registryPackageType:\"DOCKER\",name: \"sdk_ci_demopy-testing\"){nodes{versions(first:100){nodes{version}}}}}}"}' | jq .)
+        echo ::set-env name=PULL_NUMBER::$(echo "$GITHUB_REF" | awk -F / '{print $3}')
 
 
     - name: Verify Version and Repo Name
@@ -38,6 +38,6 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
         repository: ${{ env.MY_APP }}
-        tag_with_ref: true
+        # tag_with_ref: true
         tag_with_sha: true
-        tags: ${{ env.APP_VERSION_NUM }}, latest
+        tags: $APP_VERSION_NUM, $PULL_NUMBER
