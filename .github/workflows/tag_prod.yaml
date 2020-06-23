@@ -25,9 +25,10 @@ jobs:
       if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
       run: |
         echo ::set-env name=MY_SHA::$(git rev-parse --short=7 HEAD)
+        echo ::set-env name=MY_REF::$${{ github.event.pull_request.head.ref }}
         echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
         echo ::set-env name=TEST_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
-        echo ::set-env name=MY_PROD_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//"))
+        echo ::set-env name=MY_PROD_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-prod")
 
 
 ## Determine if the current image is already tagged for the various environments
@@ -59,8 +60,8 @@ jobs:
       if: github.event.action == 'closed' && github.event.pull_request.merged == true
       run: |
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
-        docker pull docker.pkg.github.com/$TEST_APP:sha-$MY_SHA
-        docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_PROD_APP:latest
-        docker tag docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA
-        docker push docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA
+        docker pull docker.pkg.github.com/$TEST_APP:$MY_REF
+        docker tag docker.pkg.github.com/$TEST_APP:$MY_REF docker.pkg.github.com/$MY_PROD_APP:latest
+        docker tag docker.pkg.github.com/$MY_PROD_APP:$MY_REF docker.pkg.github.com/$MY_PROD_APP:$MY_REF
+        docker push docker.pkg.github.com/$MY_PROD_APP:$MY_REF
         docker push docker.pkg.github.com/$MY_PROD_APP:latest
