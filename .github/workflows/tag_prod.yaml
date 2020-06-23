@@ -18,7 +18,7 @@ jobs:
       if: github.event.action == 'closed' && github.event.pull_request.merged == true
       uses: actions/checkout@v2
       with:
-        ref: ${{ github.event.pull_request.head.sha }}
+        ref: ${{ github.event.pull_request.head.ref }}
 
 
     - name: Set App Version and Name Vars
@@ -50,7 +50,7 @@ jobs:
         echo "Prod Endpoint:" $MY_PROD_APP
         echo "Versions:" $VERSIONS
         echo "HeadRef:" $GITHUB_HEAD_REF
-        echo "Checking Out:" ${{ github.event.pull_request.head.sha }}
+        echo "Checking Out:" ${{ github.event.pull_request.head.ref }}
 
 
 ## Set target Docker image based on new pull request label
