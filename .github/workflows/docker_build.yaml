@@ -20,7 +20,8 @@ jobs:
       run: |
         echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
         echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
-        echo ::set-env name=PULL_NUMBER::$(echo "$GITHUB_REF" | awk -F / '{print $3}')
+        # echo ::set-env name=PULL_NUMBER::$(echo "$GITHUB_REF" | awk -F / '{print $3}')
+        echo ::set-env name=PULL_NUMBER::$(echo "PR-"$(echo $GITHUB_EVENT_NUMBER))
 
 
     - name: Verify Version and Repo Name
@@ -40,4 +41,9 @@ jobs:
         repository: ${{ env.MY_APP }}
         # tag_with_ref: true
         tag_with_sha: true
-        tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM}}
+        # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
+        # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
+        tags: ${{ env.PULL_NUMBER }}
+
+
+## Trying to set Docker to use $PULL_NUMBER (formatted) instead of github.event.number, which just gives us the raw PR number w/o `PR-`.
