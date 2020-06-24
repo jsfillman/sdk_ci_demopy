@@ -48,5 +48,5 @@ jobs:
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
         tags: 
-          - ${{ env.PULL_NUMBER }}
-          - $GITHUB_HEAD_REF
+          ${{ env.PULL_NUMBER }}
+          $GITHUB_HEAD_REF
