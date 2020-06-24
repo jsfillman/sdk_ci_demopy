@@ -30,7 +30,7 @@ jobs:
         echo "App:" $MY_APP
         echo "Repo:" $GITHUB_REPOSITORY
         echo "PR No:" $PR
-        echo "PR:" $PULL_NUMBER
+        echo "PR:" $GITHUB_REF
         
     - name: Build and Push to Packages
       if: "!contains(github.event.head_commit.message, 'skip ci')"    
@@ -44,7 +44,7 @@ jobs:
         tag_with_sha: true
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
-        tags: ${{ env.PULL_NUMBER }}
+        tags: ${{ env.GITHUB_REF }}
 
 
 ## Trying to set Docker to use $PULL_NUMBER (formatted) instead of github.event.number, which just gives us the raw PR number w/o `PR-`.
