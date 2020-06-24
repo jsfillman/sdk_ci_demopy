@@ -33,6 +33,7 @@ jobs:
         echo "Ref:" $GITHUB_REF
         echo "PR No:" $PR
         echo "PR:" $PULL_NUMBER
+        echo "HeadRef:" $GITHUB_HEAD_REF
         
     - name: Build and Push to Packages
       if: "!contains(github.event.head_commit.message, 'skip ci')"    
@@ -46,4 +47,6 @@ jobs:
         tag_with_sha: true
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
-        tags: ${{ env.PULL_NUMBER }}
+        tags: 
+          - ${{ env.PULL_NUMBER }}
+          - $GITHUB_HEAD_REF
