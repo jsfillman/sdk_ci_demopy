@@ -50,3 +50,7 @@ jobs:
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
         tags: ${{ env.MY_BRANCH}}
+
+# Variable "env.MY_BRANCH" fails. Can only seem to do via PR.
+# The limitations in naming with `docker/build-push-action@v1` aren't worth the 3 lines of code saved.
+# Migrating to stock docker commands to get around the excess of variables we're using currently (and to make branch & PR tagging work the way we need).
