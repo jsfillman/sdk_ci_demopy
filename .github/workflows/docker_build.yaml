@@ -21,7 +21,8 @@ jobs:
         echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
         echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
         echo ::set-env name=PR::$(echo "$GITHUB_REF" | awk -F / '{print $3}')
-        echo ::set-env name=PULL_NUMBER::$(echo "PR-"$(echo $PR))
+        echo ::set-env name=PULL_NUMBER::$(echo "$PR" | awk -F / '{print $2,$3}' | sed -e 's/ /_/g')
+        # echo ::set-env name=PULL_NUMBER::$(echo "PR-"$(echo $PR))
 
 
     - name: Verify Version and Repo Name
@@ -29,8 +30,9 @@ jobs:
         echo "Version:" $APP_VERSION_NUM
         echo "App:" $MY_APP
         echo "Repo:" $GITHUB_REPOSITORY
+        echo "Ref:" $GITHUB_REF
         echo "PR No:" $PR
-        echo "PR:" $GITHUB_REF
+        echo "PR:" $PULL_NUMBER
         
     - name: Build and Push to Packages
       if: "!contains(github.event.head_commit.message, 'skip ci')"    
@@ -44,7 +46,7 @@ jobs:
         tag_with_sha: true
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
-        tags: ${{ env.GITHUB_REF }}
+        tags: ${{ env.PULL_NUMBER }}
 
 
 ## Trying to set Docker to use $PULL_NUMBER (formatted) instead of github.event.number, which just gives us the raw PR number w/o `PR-`.
