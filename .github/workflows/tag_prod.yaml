@@ -26,6 +26,7 @@ jobs:
       run: |
         echo ::set-env name=MY_SHA::$(git rev-parse --short=7 HEAD)
         echo ::set-env name=PULL_NUMBER::$(echo "$GITHUB_REF" | awk -F / '{print $2,$3}' | sed -e 's/ /_/g')
+        echo ::set-env name=MY_BRANCH::${{ github.event.pull_request.head.ref }}
         echo ::set-env name=MY_REF::$${{ github.event.pull_request.head.ref }}
         echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
         echo ::set-env name=TEST_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
@@ -67,5 +68,7 @@ jobs:
         docker pull docker.pkg.github.com/$TEST_APP:$PULL_NUMBER
         docker tag docker.pkg.github.com/$TEST_APP:$PULL_NUMBER docker.pkg.github.com/$MY_PROD_APP:latest
         docker tag docker.pkg.github.com/$MY_PROD_APP:$PULL_NUMBER docker.pkg.github.com/$MY_PROD_APP:$PULL_NUMBER
+        docker tag docker.pkg.github.com/$MY_PROD_APP:sha-$MY_SHA docker.pkg.github.com/$MY_PROD_APP:$GITHUB_HEAD_REF
         docker push docker.pkg.github.com/$MY_PROD_APP:$PULL_NUMBER
+        docker push docker.pkg.github.com/$MY_PROD_APP:$GITHUB_HEAD_REF
         docker push docker.pkg.github.com/$MY_PROD_APP:latest
