@@ -20,8 +20,8 @@ jobs:
       run: |
         echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
         echo ::set-env name=MY_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
-        # echo ::set-env name=PULL_NUMBER::$(echo "$GITHUB_REF" | awk -F / '{print $3}')
-        echo ::set-env name=PULL_NUMBER::$(echo "PR-"$GITHUB_EVENT_NUMBER)
+        echo ::set-env name=PR::$(echo "$GITHUB_REF" | awk -F / '{print $3}')
+        echo ::set-env name=PULL_NUMBER::$(echo "PR-"$PR)
 
 
     - name: Verify Version and Repo Name
@@ -29,7 +29,7 @@ jobs:
         echo "Version:" $APP_VERSION_NUM
         echo "App:" $MY_APP
         echo "Repo:" $GITHUB_REPOSITORY
-        echo "PR No:" $GITHUB_EVENT_NUMBER
+        echo "PR No:" $PR
         echo "PR:" $PULL_NUMBER
         
     - name: Build and Push to Packages
