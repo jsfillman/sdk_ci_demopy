@@ -47,12 +47,15 @@ jobs:
       run: |
         echo "Version:" $APP_VERSION_NUM
         echo "Repo:" $GITHUB_REPOSITORY
-        echo "SHA:" $MY_SHA
+        echo "My SHA:" $MY_SHA
         echo "Image count prod:" $ISPROD
         echo "Prod Endpoint:" $MY_PROD_APP
         echo "Versions:" $VERSIONS
-        echo "HeadRef:" $GITHUB_HEAD_REF
         echo "Checking Out:" ${{ github.event.pull_request.head.ref }}
+        echo "SHA:" $GITHUB_SHA
+        echo "REF:" $GITHUB_REF
+        echo "HeadRef:" $GITHUB_HEAD_REF
+        echo "PR:" $PULL_NUMBER
 
 
 ## Set target Docker image based on new pull request label
