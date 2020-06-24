@@ -47,4 +47,4 @@ jobs:
         tag_with_sha: true
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
-        tags: ${{ env.PULL_NUMBER }},${{ env.GITHUB_HEAD_REF}}
+        tags: ${{ env.GITHUB_HEAD_REF}}
