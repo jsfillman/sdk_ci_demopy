@@ -18,13 +18,13 @@ jobs:
     - name: Set App Version and Name Vars
       run: |
         echo ::set-env name=MY_SHA::$(git rev-parse --short=7 HEAD)
-        echo ::set-env name=PULL_NUMBER::$(echo "$GITHUB_REF" | awk -F / '{print $3}')
+        echo ::set-env name=PULL_NUMBER::$(echo "$GITHUB_REF" | awk -F / '{print $2,$3}' | sed -e 's/ /_/g')
         echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
         echo ::set-env name=TEST_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-testing")
         echo ::set-env name=MY_DEV_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-appdev")
         echo ::set-env name=MY_NEXT_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-next")
         echo ::set-env name=MY_CI_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-ci")
-        echo ::set-env name=MY_PROD_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//"))
+        echo ::set-env name=MY_PROD_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-prod")
 
 
 ## Determine if the current image is already tagged for the various environments
@@ -68,9 +68,9 @@ jobs:
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
         docker pull docker.pkg.github.com/$TEST_APP:sha-$MY_SHA
         docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_DEV_APP:sha-$MY_SHA
-        docker tag docker.pkg.github.com/$MY_DEV_APP:sha-$MY_SHA docker.pkg.github.com/$MY_DEV_APP:latest
+        docker tag docker.pkg.github.com/$MY_DEV_APP:sha-$MY_SHA docker.pkg.github.com/$MY_DEV_APP:$PULL_NUMBER
         docker push docker.pkg.github.com/$MY_DEV_APP:sha-$MY_SHA
-        docker push docker.pkg.github.com/$MY_DEV_APP:latest
+        docker push docker.pkg.github.com/$MY_DEV_APP:$PULL_NUMBER
 
 
     - name: Tag Next
@@ -79,9 +79,9 @@ jobs:
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
         docker pull docker.pkg.github.com/$TEST_APP:sha-$MY_SHA
         docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_NEXT_APP:sha-$MY_SHA
-        docker tag docker.pkg.github.com/$MY_NEXT_APP:sha-$MY_SHA docker.pkg.github.com/$MY_NEXT_APP:latest
+        docker tag docker.pkg.github.com/$MY_NEXT_APP:sha-$MY_SHA docker.pkg.github.com/$MY_NEXT_APP:$PULL_NUMBER
         docker push docker.pkg.github.com/$MY_NEXT_APP:sha-$MY_SHA
-        docker push docker.pkg.github.com/$MY_NEXT_APP:latest
+        docker push docker.pkg.github.com/$MY_NEXT_APP:$PULL_NUMBER
 
     - name: Tag CI
       if: contains( github.event.pull_request.labels.*.name, 'ci') && env.ISCI < 1
@@ -89,9 +89,9 @@ jobs:
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
         docker pull docker.pkg.github.com/$TEST_APP:sha-$MY_SHA
         docker tag docker.pkg.github.com/$TEST_APP:sha-$MY_SHA docker.pkg.github.com/$MY_CI_APP:sha-$MY_SHA
-        docker tag docker.pkg.github.com/$MY_CI_APP:sha-$MY_SHA docker.pkg.github.com/$MY_CI_APP:latest
+        docker tag docker.pkg.github.com/$MY_CI_APP:sha-$MY_SHA docker.pkg.github.com/$MY_CI_APP:$PULL_NUMBER
         docker push docker.pkg.github.com/$MY_CI_APP:sha-$MY_SHA
-        docker push docker.pkg.github.com/$MY_CI_APP:latest
+        docker push docker.pkg.github.com/$MY_CI_APP:$PULL_NUMBER
 
 
 

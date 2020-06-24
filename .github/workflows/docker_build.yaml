@@ -47,6 +47,3 @@ jobs:
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
         # tags: ${{ github.event.number }},${{ env.APP_VERSION_NUM }}
         tags: ${{ env.PULL_NUMBER }}
-
-
-## Trying to set Docker to use $PULL_NUMBER (formatted) instead of github.event.number, which just gives us the raw PR number w/o `PR-`.
