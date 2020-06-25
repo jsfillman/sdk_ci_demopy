@@ -43,7 +43,8 @@ jobs:
       run: |
         echo "App:" $MY_APP
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
-        docker build . -t $MY_APP:sha-$MY_SHA
+        docker build . -t $MY_APP
+        docker tag $MY_APP $MY_APP:$MY_SHA
         docker tag $MY_APP:sha-$MY_SHA $MY_APP:$GITHUB_HEAD_REF
         docker tag $MY_APP:sha-$MY_SHA $MY_APP:$PULL_NUMBER
         docker push docker.pkg.github.com/$MY_APP:sha-$MY_SHA
