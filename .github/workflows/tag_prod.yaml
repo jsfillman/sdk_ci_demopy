@@ -25,7 +25,7 @@ jobs:
       if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
       run: |
         echo ::set-env name=MY_SHA::$(git rev-parse --short=7 HEAD)
-        echo ::set-env name=PULL_NUMBER::$(echo "$GITHUB_REF" | awk -F / '{print $2,$3}' | sed -e 's/ /_/g')
+        echo ::set-env name=PULL_NUMBER::$(git log | grep $GITHUB_HEAD_REF | awk '{print $4}' | sed -e 's/#/pull_/g')
         echo ::set-env name=MY_BRANCH::${{ github.event.pull_request.head.ref }}
         echo ::set-env name=MY_REF::$${{ github.event.pull_request.head.ref }}
         echo ::set-env name=APP_VERSION_NUM::$(sed -n '/module-version:/{n;p;}' kbase.yml | sed 's/ //g')
@@ -66,5 +66,7 @@ jobs:
       run: |
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
         docker pull docker.pkg.github.com/$TEST_APP:$GITHUB_HEAD_REF
+        docker tag docker.pkg.github.com/$TEST_APP:$GITHUB_HEAD_REF docker.pkg.github.com/$MY_PROD_APP:$PULL_NUMBER
         docker tag docker.pkg.github.com/$TEST_APP:$GITHUB_HEAD_REF docker.pkg.github.com/$MY_PROD_APP:latest
+        docker push docker.pkg.github.com/$MY_PROD_APP:$PULL_NUMBER
         docker push docker.pkg.github.com/$MY_PROD_APP:latest
