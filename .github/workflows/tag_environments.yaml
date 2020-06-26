@@ -25,6 +25,8 @@ jobs:
         echo ::set-env name=MY_NEXT_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-next")
         echo ::set-env name=MY_CI_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-ci")
         echo ::set-env name=MY_PROD_APP::$(echo ${GITHUB_REPOSITORY}/$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' | sed -e "s/:refs//")"-prod")
+        echo ::set-env name=MY_USER::$(echo $GITHUB_REPOSITORY | awk -F / '{print $1}' )
+        echo ::set-env name=MY_GPR::$(echo $GITHUB_REPOSITORY | awk -F / '{print $2}' )
 
 
 ## Determine if the current image is already tagged for the various environments
@@ -32,10 +34,10 @@ jobs:
 ## TODO: Replace `registryPackages` with `$VERSIONS` or newer equivalent
     - name: Check for existing images
       run: |
-        echo ::set-env name=ISDEV::$(curl -sL -X POST https://api.github.com/graphql -H "Authorization: bearer ${{ secrets.GITHUB_TOKEN }} " -d '{"query":"query{repository(owner:\"jsfillman\",name:\"sdk_ci_demopy\"){registryPackages(first:100,registryPackageType:\"DOCKER\",name: \"$MY_DEV_APP\"){nodes{versions(first:100){nodes{version}}}}}}"}' | jq . | grep -c $MY_SHA)
+        echo ::set-env name=ISDEV::$(curl -sL -X POST https://api.github.com/graphql -H "Authorization: bearer ${{ secrets.GITHUB_TOKEN }} " -d '{"query":"query{repository(owner:\"${MY_USER}\",name:\"${MY_GPR}\"){registryPackages(first:100,registryPackageType:\"DOCKER\",name: \"${MY_GPR}-appdev\"){nodes{versions(first:100){nodes{version}}}}}}"}' | jq . | grep -c $MY_SHA)
         echo ::set-env name=ISNEXT::$(curl -sL -X POST https://api.github.com/graphql -H "Authorization: bearer ${{ secrets.GITHUB_TOKEN }} " -d '{"query":"query{repository(owner:\"jsfillman\",name:\"sdk_ci_demopy\"){registryPackages(first:100,registryPackageType:\"DOCKER\",name: \"sdk_ci_demopy-next\"){nodes{versions(first:100){nodes{version}}}}}}"}' | jq . | grep -c $MY_SHA)
         echo ::set-env name=ISCI::$(curl -sL -X POST https://api.github.com/graphql -H "Authorization: bearer ${{ secrets.GITHUB_TOKEN }} " -d '{"query":"query{repository(owner:\"jsfillman\",name:\"sdk_ci_demopy\"){registryPackages(first:100,registryPackageType:\"DOCKER\",name: \"sdk_ci_demopy-ci\"){nodes{versions(first:100){nodes{version}}}}}}"}' | jq . | grep -c $MY_SHA)
-        echo ::set-env name=ISPROD::$(curl -sL -X POST https://api.github.com/graphql -H "Authorization: bearer ${{ secrets.GITHUB_TOKEN }} " -d '{"query":"query{repository(owner:\"jsfillman\",name:\"sdk_ci_demopy\"){registryPackages(first:100,registryPackageType:\"DOCKER\",name: \"sdk_ci_demopy\"){nodes{versions(first:100){nodes{version}}}}}}"}' | jq . | grep -c $MY_SHA)
+        echo ::set-env name=ISPROD::$(curl -sL -X POST https://api.github.com/graphql -H "Authorization: bearer ${{ secrets.GITHUB_TOKEN }} " -d '{"query":"query{repository(owner:\"jsfillman\",name:\"sdk_ci_demopy\"){registryPackages(first:100,registryPackageType:\"DOCKER\",name: \"sdk_ci_demopy-prod\"){nodes{versions(first:100){nodes{version}}}}}}"}' | jq . | grep -c $MY_SHA)
 
 
 ## Confirm variables
