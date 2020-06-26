@@ -1,5 +1,4 @@
-name: Tag Production on PR Merge
-
+name: Tag Production Post-Merge
 on:
   pull_request:
     branches:
