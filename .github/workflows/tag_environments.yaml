@@ -59,6 +59,8 @@ jobs:
         echo "REF:" $GITHUB_REF
         echo "HeadRef:" $GITHUB_HEAD_REF
         echo "PR:" $PULL_NUMBER
+        echo "User:" $MY_USER
+        echo "Package:" $MY_GPR
 
 
 ## Set target Docker image based on new pull request label
